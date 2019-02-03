@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import argparse
 import h5py
@@ -6,6 +7,7 @@ import h5py
 from logIO.Borehole import BoreholeIO
 from processing.Logs import processLog
 from tools.smoothLogs import movingAverage
+from tools.plotLogs import logPlotter
 
 def main():
 	parser = argparse.ArgumentParser()
@@ -17,6 +19,10 @@ def main():
 	safodIO = BoreholeIO(args.inFile)
 	data = safodIO.readHDF5()
 	print(list(data.keys()))
+
+	plotter = logPlotter(data, 
+                         logs=['m2rx', 'Vp', 'Density', 'Depth_m'],
+                         units = ['Ohm-m', 'km/s', 'g/cm^3', 'm'])
 
 
 if __name__ == '__main__':
