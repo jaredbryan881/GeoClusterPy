@@ -18,11 +18,14 @@ def main():
 
 	safodIO = BoreholeIO(args.inFile)
 	data = safodIO.readHDF5()
+	avgData = {}
+	for key in list(data.keys()):
+		avgData[key] = movingAverage(data[key], window=14)
 	print(list(data.keys()))
-
+	
 	plotter = logPlotter(data, 
-                         logs=['m2rx', 'Vp', 'Density', 'Depth_m'],
-                         units = ['Ohm-m', 'km/s', 'g/cm^3', 'm'])
+	                     logs=['m2rx', 'Vp', 'Density', 'Depth_m'],
+	                     units = ['Ohm-m', 'km/s', 'g/cm^3', 'm'])
 
 
 if __name__ == '__main__':

@@ -39,7 +39,7 @@ class logPlotter:
 			raise ValueError("Plot dimension specified is not viewable by mere mortals.")
 
 	def plot1D(self):
-		"""Plot a single quantity horizontally."""
+		"""Plot a single continuous quantity."""
 		plt.plot(self.data[self.logs[0]])
 
 		# add x label
@@ -50,8 +50,8 @@ class logPlotter:
 		plt.show()
 
 	def plot2D(self):
-		"""Plot two quantities."""
-		plt.plot(self.data[self.logs[0]], self.data[self.logs[1]])
+		"""Plot two quantities as a scatter plot."""
+		plt.scatter(self.data[self.logs[0]], self.data[self.logs[1]], s=1)
 
 		# add x label
 		if self.units[0] is not None:
@@ -66,7 +66,7 @@ class logPlotter:
 		plt.show()
 
 	def plot3D(self):
-		"""Plot three quantities."""
+		"""Plot three quantities as a scatter plot."""
 		fig = plt.figure()
 		ax = fig.add_subplot(111, projection='3d')
 		ax.scatter(self.data[self.logs[0]], 
@@ -93,7 +93,7 @@ class logPlotter:
 		
 
 	def plot4D(self):
-		"""Plot three quantities with a fourth quantity defining the color map."""
+		"""Plot three quantities as a scatter plot with a fourth quantity defining the color map."""
 		fig = plt.figure()
 		ax = fig.add_subplot(111, projection='3d')
 		p = ax.scatter(self.data[self.logs[0]], 
@@ -101,7 +101,7 @@ class logPlotter:
                        self.data[self.logs[2]], 
                        s=1, 
                        c=self.data[self.logs[3]],
-                       cmap='coolwarm')
+                       cmap='inferno')
 
 		# add x label
 		if self.units[0] is not None:
