@@ -32,7 +32,7 @@ def main():
 	clusterer = clusterLogs(data, 
 	                        logs=['m2rx', 'Vp', 'Density'])
 	stackedLogs = clusterer.stackLogs()
-	stackedLogs = normalize(stackedLogs, axis=1)
+	stackedLogs, nfList = normalize(stackedLogs, axis=1)
 	db, clusterStats = clusterer.dbscan_cluster(stackedLogs, eps=0.0275, minSamples=25)
 	
 	clusterPlot = clusterPlotter(data=stackedLogs, 
