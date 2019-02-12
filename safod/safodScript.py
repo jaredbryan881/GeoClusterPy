@@ -1,13 +1,14 @@
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-import numpy as np
 import argparse
-import h5py
 
 from logIO.Borehole import BoreholeIO
-from processing.Logs import processLog
+
+from processing.cleanLogs import cleanLog
+from processing.clusterLogs import clusterLogs
+from processing.clusterLogs import normalize
+
 from tools.smoothLogs import movingAverage
 from tools.plotLogs import logPlotter
+from tools.plotLogs import clusterPlotter
 
 def main():
 	parser = argparse.ArgumentParser()
@@ -23,9 +24,22 @@ def main():
 		avgData[key] = movingAverage(data[key], window=14)
 	print(list(data.keys()))
 	
-	plotter = logPlotter(data, 
+	logPlot = logPlotter(data, 
 	                     logs=['m2rx', 'Vp', 'Density', 'Depth_m'],
 	                     units = ['Ohm-m', 'km/s', 'g/cm^3', 'm'])
+	
+
+	clusterer = clusterLogs(data, 
+	                        logs=['m2rx', 'Vp', 'Density'])
+	stackedLogs = clusterer.stackLogs()
+	stackedLogs = normalize(stackedLogs, axis=1)
+	db, clusterStats = clusterer.dbscan_cluster(stackedLogs, eps=0.0275, minSamples=25)
+	
+	clusterPlot = clusterPlotter(data=stackedLogs, 
+	                             clusterStats=clusterStats,
+	                             logs=['m2rx', 'Vp', 'Density'],
+	                             units=['Ohm-m', 'km/s', 'g/cm^3'],
+	                             nonCore=False)
 
 
 if __name__ == '__main__':

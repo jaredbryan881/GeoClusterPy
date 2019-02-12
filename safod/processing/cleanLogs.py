@@ -1,4 +1,6 @@
-class processLog:
+import numpy as np
+
+class cleanLog:
 	def __init__(self, data):
 		"""Initialize well log processing and cleaning utilities.
 
