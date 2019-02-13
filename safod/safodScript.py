@@ -63,12 +63,13 @@ def main():
     
     # cluster logs using HDBSCAN algorithm
     hdb, clusterStats = clusterer.hdbscan_cluster(stackedLogsNorm, minSamples=25, gen_mst=True)
-    
+
     # plot clusters
     hdbscanClusterPlot = hdbscanClusterPlotter(data=stackedLogs,
                                                clusterStats=clusterStats,
                                                logs=['m2rx', 'Vp', 'Density'],
-                                               units=['Ohm-m', 'km/s', 'g/cm^3'])
+                                               units=['Ohm-m', 'km/s', 'g/cm^3'],
+                                               hideOutliers=1.0)
 
 if __name__ == '__main__':
     main()

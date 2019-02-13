@@ -239,7 +239,7 @@ class dbscanClusterPlotter:
 
         
 class hdbscanClusterPlotter:
-    def __init__(self, data, clusterStats, logs, units):
+    def __init__(self, data, clusterStats, logs, units, hideOutliers=1.0):
         """Initialize the cluster plotter by setting data and cluster statistics.
 
         Args:
@@ -251,11 +251,14 @@ class hdbscanClusterPlotter:
                 List of log names.
             :param units: list
                 List of log units.
+            :param hideOutliers: float
+                Threshold value above which outlier points are not plotted.
         """
         self.data = data
         self.clusterStats = clusterStats
         self.logs = logs
         self.units = units
+        self.threshold = hideOutliers
 
         # set cluster colors
         colorSpace = np.linspace(0, 1, len(self.clusterStats['uniqueLabels']))
@@ -314,15 +317,17 @@ class hdbscanClusterPlotter:
         for k, col in zip(self.clusterStats['uniqueLabels'], self.colors):
             # set group the points belong to
             classMemberMask = (self.clusterStats['labels'] == k)
-            # select subset of data
-            xyz = self.data[classMemberMask]
+            outlierMask = (self.clusterStats['outliers'] < self.threshold)
             
+            # select subset of data
+            xyz = self.data[classMemberMask & outlierMask]
+
             # set color and transparency of each point.
             rgba = np.empty((xyz.shape[0], 4))
             rgba[:, 0] = col[0]
             rgba[:, 1] = col[1]
             rgba[:, 2] = col[2]
-            rgba[:, 3] = alphas[classMemberMask]
+            rgba[:, 3] = alphas[classMemberMask & outlierMask]
             
             # plot clusters
             ax.scatter(xyz[:, 0], xyz[:, 1], xyz[:, 2], facecolors=rgba, edgecolors='k', linewidth=0.3, s=3)

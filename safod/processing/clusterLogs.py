@@ -78,9 +78,6 @@ class clusterLogs:
         clusterStats['coreSamplesMask'] = np.zeros_like(labels, dtype=bool)
         clusterStats['coreSamplesMask'][db.core_sample_indices_] = True
 
-        print('Number of clusters: {}'.format(clusterStats['n_clusters']))
-        print('Number of noise points: {}'.format(clusterStats['n_noise']))
-
         return clusterStats
         
     def knGraph(self, data, k):
