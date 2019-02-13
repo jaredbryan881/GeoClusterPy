@@ -46,30 +46,26 @@ def main():
     clusterer.knGraph(stackedLogsNorm, 5)
     # cluster logs using DBSCAN algorithm
     db, clusterStats = clusterer.dbscan_cluster(stackedLogsNorm, eps=0.025, minSamples=25)
-	# plot clusters
+    # plot clusters
     dbscanClusterPlot = dbscanClusterPlotter(data=stackedLogs, 
                                              clusterStats=clusterStats,
                                              logs=['m2rx', 'Vp', 'Density'],
                                              units=['Ohm-m', 'km/s', 'g/cm^3'],
                                              nonCore=True)
-    # reference clusters back to depth       
-    for c in clusterStats['uniqueLabels']:
-        d = data['Depth_m'][np.where(clusterStats['labels'] == c)[0]]
-        cl = np.ones(d.shape[0]) * c
-        plt.scatter(d, cl)
-    plt.xlabel('Depth (m)')
-    plt.ylabel('Cluster')
-    plt.show()
+    # reference clusters back to depth                                         
+    dbscanClusterPlot.cluster2DepthPlotter(depth=data['Depth_m'])
     
     # cluster logs using HDBSCAN algorithm
     hdb, clusterStats = clusterer.hdbscan_cluster(stackedLogsNorm, minSamples=25, gen_mst=True)
-
+    #hdb.minimum_spanning_tree_.plot(edge_cmap='viridis', edge_alpha=0.6, node_size=50, edge_linewidth=2)
     # plot clusters
     hdbscanClusterPlot = hdbscanClusterPlotter(data=stackedLogs,
                                                clusterStats=clusterStats,
                                                logs=['m2rx', 'Vp', 'Density'],
                                                units=['Ohm-m', 'km/s', 'g/cm^3'],
                                                hideOutliers=1.0)
+    hdbscanClusterPlot.cluster2DepthPlotter(depth=data['Depth_m'])
 
 if __name__ == '__main__':
     main()
+

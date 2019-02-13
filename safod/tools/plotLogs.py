@@ -236,6 +236,15 @@ class dbscanClusterPlotter:
             ax.set_zlabel(self.logs[2])
 
         plt.show()
+        
+    def cluster2DepthPlotter(self, depth):
+        for k, col in zip(self.clusterStats['uniqueLabels'], self.colors):
+            d = depth[np.where(self.clusterStats['labels'] == k)[0]]
+            cc = np.ones(d.shape[0]) * k
+            plt.scatter(d, cc)
+        plt.xlabel('Depth (m)')
+        plt.ylabel('Cluster')
+        plt.show()
 
         
 class hdbscanClusterPlotter:
@@ -350,5 +359,28 @@ class hdbscanClusterPlotter:
             ax.set_zlabel(self.logs[2])
 
         plt.show()
-
-
+            
+    def cluster2DepthPlotter(self, depth):
+        # set color and transparency of each point based on class membership probability.
+        alphas = self.clusterStats['probabilities']
+        for k, col in zip(self.clusterStats['uniqueLabels'], self.colors):
+            classMemberMask = (self.clusterStats['labels'] == k)
+            outlierMask = (self.clusterStats['outliers'] < self.threshold)
+            
+            # depth data
+            d = depth[classMemberMask & outlierMask]
+            # cluster number
+            cc = np.ones(d.shape[0]) * k
+            
+            # set color and transparency
+            rgba = np.empty((d.shape[0], 4))
+            rgba[:, 0] = col[0]
+            rgba[:, 1] = col[1]
+            rgba[:, 2] = col[2]
+            rgba[:, 3] = alphas[classMemberMask & outlierMask]
+            
+            plt.scatter(d, cc, c=rgba)
+        plt.xlabel('Depth')
+        plt.ylabel('Cluster')
+        plt.show()
+            
