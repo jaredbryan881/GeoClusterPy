@@ -128,7 +128,7 @@ class logPlotter:
         plt.show()
 
 
-class clusterPlotter:
+class dbscanClusterPlotter:
     def __init__(self, data, clusterStats, logs, units, nonCore=True):
         """Initialize the cluster plotter by setting data and cluster statistics.
 
@@ -218,6 +218,115 @@ class clusterPlotter:
                 xyz = self.data[classMemberMask & ~self.clusterStats['coreSamplesMask']]
                 ax.scatter(xyz[:, 0], xyz[:, 1], xyz[:, 2], facecolors=col, edgecolors='k', linewidth=0.3, s=3)
 
+        # add axis labels and units	
+        # add x label
+        if self.units[0] is not None:
+            ax.set_xlabel(self.logs[0] + '(' + self.units[0] + ')')            
+        else:
+            ax.set_xlabel(self.logs[0])
+        # add y label
+        if self.units[1] is not None:
+            ax.set_ylabel(self.logs[1] + '(' + self.units[1] + ')')
+        else:
+            ax.set_ylabel(self.logs[1])
+        # add z label
+        if self.units[2] is not None:
+            ax.set_zlabel(self.logs[2] + '(' + self.units[2] + ')')
+        else:
+            ax.set_zlabel(self.logs[2])
+
+        plt.show()
+
+        
+class hdbscanClusterPlotter:
+    def __init__(self, data, clusterStats, logs, units):
+        """Initialize the cluster plotter by setting data and cluster statistics.
+
+        Args:
+            :param data: np.array
+                2D numpy array containing log data.
+            :param clusterStats: dict
+                Number of core and accessory clustered points, noise points, and labels.
+            :param logs: list
+                List of log names.
+            :param units: list
+                List of log units.
+        """
+        self.data = data
+        self.clusterStats = clusterStats
+        self.logs = logs
+        self.units = units
+
+        # set cluster colors
+        colorSpace = np.linspace(0, 1, len(self.clusterStats['uniqueLabels']))
+        self.colors = [plt.cm.Spectral(l) for l in colorSpace]
+
+        plotDim = self.data.shape[1]
+		
+        if plotDim == 2:
+            self.plotClusters2D()
+        elif plotDim == 3:
+            self.plotClusters3D()
+		    
+    def plotClusters2D(self):
+        """Plot clustered points in 2 dimensions."""
+        fig = plt.figure()
+
+        # set translucency by probability of cluster membership
+        alphas = self.clusterStats['probabilities']
+        for k, col in zip(self.clusterStats['uniqueLabels'], self.colors):
+            # set group the points belong to
+            classMemberMask = (self.clusterStats['labels'] == k)
+            # select subset of data
+            xyz = self.data[classMemberMask]
+            
+            # set color and transparency of each point.
+            rgba = np.empty((xyz.shape[0], 4))
+            rgba[:, 0] = col[0]
+            rgba[:, 1] = col[1]
+            rgba[:, 2] = col[2]
+            rgba[:, 3] = alphas[classMemberMask]
+            
+            # plot clusters
+            plt.scatter(xyz[:, 0], xyz[:, 1], facecolors=rgba, edgecolors='k', linewidth=0.3, s=3)
+
+        # add axis labels and units
+        # add x label
+        if self.units[0] is not None:
+            plt.xlabel(self.logs[0] + '(' + self.units[0] + ')')
+        else:
+            plt.xlabel(self.logs[0])
+        # add y label
+        if self.units[1] is not None:
+            plt.xlabel(self.logs[1] + '(' + self.units[1] + ')')
+        else:
+            plt.xlabel(self.logs[1])
+		
+        plt.show()
+	    
+    def plotClusters3D(self):
+        """Plot clustered points in 3 dimensions."""
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        
+        # set translucency by probability of cluster membership
+        alphas = self.clusterStats['probabilities']
+        for k, col in zip(self.clusterStats['uniqueLabels'], self.colors):
+            # set group the points belong to
+            classMemberMask = (self.clusterStats['labels'] == k)
+            # select subset of data
+            xyz = self.data[classMemberMask]
+            
+            # set color and transparency of each point.
+            rgba = np.empty((xyz.shape[0], 4))
+            rgba[:, 0] = col[0]
+            rgba[:, 1] = col[1]
+            rgba[:, 2] = col[2]
+            rgba[:, 3] = alphas[classMemberMask]
+            
+            # plot clusters
+            ax.scatter(xyz[:, 0], xyz[:, 1], xyz[:, 2], facecolors=rgba, edgecolors='k', linewidth=0.3, s=3)
+        
         # add axis labels and units	
         # add x label
         if self.units[0] is not None:

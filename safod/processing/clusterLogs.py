@@ -1,6 +1,7 @@
 from sklearn.cluster import DBSCAN
 from sklearn.neighbors import kneighbors_graph
 from sklearn.neighbors import NearestNeighbors
+import hdbscan
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
@@ -98,6 +99,52 @@ class clusterLogs:
         plt.plot(list(range(1, data.shape[0]+1)), distanceDec)
         plt.title('K-Nearest-Neighbors')
         plt.show()
+        
+    def hdbscan_cluster(self, data, minSamples, gen_mst):
+        """Cluster a dataset using the HDBSCAN algorithm.
+        
+        Args:
+            :param data: np.array
+                numpy array containing log data.
+            :param minSamples: int
+                number of samples needed to define a unique cluster.
+            :param gen_mst: bool
+                whether to generate the minimum spanning tree or not.
+                
+        Returns:
+            :return hdb: HDBSCAN object
+                HDBSCAN clustering object
+        """
+        hdb = hdbscan.HDBSCAN(min_cluster_size=minSamples, gen_min_span_tree=gen_mst).fit(data)
+        clusterStats = self.hdbscan_cluster_stats(hdb)
+        
+        return hdb, clusterStats
+        
+    def hdbscan_cluster_stats(self, hdb):
+        """Create dictionary for HDBSCAN clustering statistics.
+        
+        Args: 
+            :param hdb: HDBSCAN object
+                HDBSCAN clustering object.
+        
+        Returns:
+            :return clusterStats: dict
+                Dictionary containing clustering statistics.
+        """
+        clusterStats = {}
+        # labels
+        labels = hdb.labels_
+        clusterStats['labels'] = labels
+        # unique labels
+        clusterStats['uniqueLabels'] = set(labels)
+        # probability of cluster membership
+        clusterStats['probabilities'] = hdb.probabilities_
+        # cluster persistence over different distance scales
+        clusterStats['persistence'] = hdb.cluster_persistence_
+        # outlier score
+        clusterStats['outliers'] = hdb.outlier_scores_
+        
+        return clusterStats
 
 
 def normalize(data, axis):
