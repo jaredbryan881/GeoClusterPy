@@ -1,4 +1,5 @@
 from sklearn.cluster import DBSCAN
+from sklearn.cluster import KMeans
 from sklearn.neighbors import kneighbors_graph
 from sklearn.neighbors import NearestNeighbors
 import hdbscan
@@ -30,6 +31,24 @@ class clusterLogs:
         stackedLogs = np.stack(logArr, axis=1)
 
         return stackedLogs
+        
+    def kmeans_cluster(self, data, n_clusters, random_state=0):
+        """Cluster a datset using the kmeans algorithm.
+        
+        Args:
+            :param data: np.array
+                Data containing log data in n dimensions.
+            :param n_clusters: int
+                Number of clusters to generate.
+            :param random_state: int
+                seed for random number generator
+        
+        Returns:
+            :return km: kmeans object
+                instance of kmeans class with associated cluster labels and centroids
+        """
+        km = KMeans(n_clusters=n_clusters, random_state=random_state).fit(data)
+        return km
 
     def dbscan_cluster(self, data, eps, minSamples):
         """Cluster a dataset using the DBSCAN algorithm.
@@ -158,10 +177,12 @@ def normalize(data, axis):
             numpy array containing normalized log data.
         :return nfList: list
             list of floats containing the factor used to normalize the data"""
+    nfList = []
     for i in range(data.shape[axis]):
     	# get largest absolute value of an element
     	n_factor = np.max((abs(np.min(data[:, i])), abs(np.max(data[:, i]))))
     	data[:, i] /= n_factor
+    	nfList.append(n_factor)
     	
-    return data
+    return data, nfList
 

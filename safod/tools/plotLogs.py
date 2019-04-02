@@ -19,22 +19,22 @@ class logPlotter:
         self.units = units
 
         # set dimension of the plot based on the number of logs provided
-        plotDim = len(self.logs)
+        self.plotDim = len(self.logs)
 
         # set missing values of units to None
-        for i in range(plotDim):
+        for i in range(self.plotDim):
             try:
                 val = self.units[i]
             except:
                 self.units.append(None)
 
-        if plotDim == 1:
+        if self.plotDim == 1:
             self.plot1D()
-        elif plotDim == 2:
+        elif self.plotDim == 2:
             self.plot2D()
-        elif plotDim == 3:
+        elif self.plotDim == 3:
             self.plot3D()
-        elif plotDim == 4:
+        elif self.plotDim == 4:
             self.plot4D()
         else:
             raise ValueError("Plot dimension specified is not viewable by mere mortals.")
@@ -383,4 +383,111 @@ class hdbscanClusterPlotter:
         plt.xlabel('Depth')
         plt.ylabel('Cluster')
         plt.show()
+        
+class kmeansClusterPlotter:
+    def __init__(self, data, km_labels, n_clusters, logs, units):
+        """Initialize kmeans cluster plotter by setting data.
+        
+        Args:
+            :param data: np.array
+                2D numpy array containing log data.
+            :param km_labels: np.array
+                kmeans cluster labels
+            :param n_clusters: int
+                number of clusters
+            :param logs: list
+                list of log names
+            :param units: list
+                List of log units.
+        """
+        self.data = data
+        self.km_labels = km_labels
+        self.logs = logs
+        self.units = units
+        
+        # set cluster colors
+        colorSpace = np.linspace(0, 1, n_clusters)
+        self.colors = [plt.cm.Spectral(l) for l in colorSpace]
+
+        plotDim = self.data.shape[1]
+		
+        if plotDim == 2:
+            self.plotClusters2D()
+        elif plotDim == 3:
+            self.plotClusters3D()
+               
+    def plotClusters2D(self):
+        """Plot clustered points in 2 dimensions."""
+        fig = plt.figure()
+
+        for k, col in zip(np.unique(self.km_labels), self.colors):
+            # set group the points belong to
+            classMemberMask = (self.km_labels == k)
+            # select subset of data
+            xyz = self.data[classMemberMask]
+            
+            # set color of each point.
+            rgb = np.empty((xyz.shape[0], 3))
+            rgb[:, 0] = col[0]
+            rgb[:, 1] = col[1]
+            rgb[:, 2] = col[2]
+            
+            # plot clusters
+            plt.scatter(xyz[:, 0], xyz[:, 1], facecolors=rgb, edgecolors='k', linewidth=0.3, s=3)
+
+        # add axis labels and units
+        # add x label
+        if self.units[0] is not None:
+            plt.xlabel(self.logs[0] + '(' + self.units[0] + ')')
+        else:
+            plt.xlabel(self.logs[0])
+        # add y label
+        if self.units[1] is not None:
+            plt.xlabel(self.logs[1] + '(' + self.units[1] + ')')
+        else:
+            plt.xlabel(self.logs[1])
+		
+        plt.show()
+        
+    def plotClusters3D(self):
+        """Plot clustered points in 3 dimensions."""
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        
+        for k, col in zip(np.unique(self.km_labels), self.colors):
+            # set group the points belong to
+            classMemberMask = (self.km_labels == k)
+            
+            # select subset of data
+            xyz = self.data[classMemberMask]
+
+            # set color and transparency of each point.
+            rgb = np.empty((xyz.shape[0], 3))
+            rgb[:, 0] = col[0]
+            rgb[:, 1] = col[1]
+            rgb[:, 2] = col[2]
+            
+            # plot clusters
+            ax.scatter(xyz[:, 0], xyz[:, 1], xyz[:, 2], facecolors=rgb, edgecolors='k', linewidth=0.3, s=3)
+        
+        # add axis labels and units	
+        # add x label
+        if self.units[0] is not None:
+            ax.set_xlabel(self.logs[0] + '(' + self.units[0] + ')')            
+        else:
+            ax.set_xlabel(self.logs[0])
+        # add y label
+        if self.units[1] is not None:
+            ax.set_ylabel(self.logs[1] + '(' + self.units[1] + ')')
+        else:
+            ax.set_ylabel(self.logs[1])
+        # add z label
+        if self.units[2] is not None:
+            ax.set_zlabel(self.logs[2] + '(' + self.units[2] + ')')
+        else:
+            ax.set_zlabel(self.logs[2])
+
+        plt.show()
+        
+    
             

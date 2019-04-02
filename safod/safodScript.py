@@ -13,6 +13,7 @@ from tools.smoothLogs import movingAverage
 from tools.plotLogs import logPlotter
 from tools.plotLogs import dbscanClusterPlotter
 from tools.plotLogs import hdbscanClusterPlotter
+from tools.plotLogs import kmeansClusterPlotter
 
 def main():
     parser = argparse.ArgumentParser()
@@ -30,18 +31,22 @@ def main():
     for key in list(data.keys()):
         avgData[key] = movingAverage(data[key], window=14)
     print(list(data.keys()))
+    
+    logs = ['m2rx', 'Vp', 'Density']
+    units = ['Ohm-m', 'km/s', 'g/cm^3']
 	
     logPlot = logPlotter(data, 
-                         logs=['m2rx', 'Vp', 'Density', 'Depth_m'],
-                         units = ['Ohm-m', 'km/s', 'g/cm^3', 'm'])
+                         logs=logs,
+                         units=units)
 
     # initialize clusterer and prepare data for clustering.
     clusterer = clusterLogs(data, 
-                            logs=['m2rx', 'Vp', 'Density'])
+                            logs=logs)
     stackedLogs = clusterer.stackLogs()
     stackedLogsNorm = copy.deepcopy(stackedLogs)
-    stackedLogsNorm = normalize(stackedLogsNorm, axis=1)
+    stackedLogsNorm, nfList = normalize(stackedLogsNorm, axis=1)
     
+    '''
     # create knn-graph to find knee-point. This will inform our choice of epsilon for DBSCAN
     clusterer.knGraph(stackedLogsNorm, 5)
     # cluster logs using DBSCAN algorithm
@@ -49,22 +54,34 @@ def main():
     # plot clusters
     dbscanClusterPlot = dbscanClusterPlotter(data=stackedLogs, 
                                              clusterStats=clusterStats,
-                                             logs=['m2rx', 'Vp', 'Density'],
-                                             units=['Ohm-m', 'km/s', 'g/cm^3'],
+                                             logs=logs,
+                                             units=logs,
                                              nonCore=True)
     # reference clusters back to depth                                         
     dbscanClusterPlot.cluster2DepthPlotter(depth=data['Depth_m'])
-    
+    '''
     # cluster logs using HDBSCAN algorithm
+    km = clusterer.kmeans_cluster(stackedLogsNorm, n_clusters=3)
+    kmClusterPlot = kmeansClusterPlotter(data=stackedLogs,
+                                         km_labels=km.labels_,
+                                         n_clusters=3,
+                                         logs=logs,
+                                         units=units)
+    quit()
     hdb, clusterStats = clusterer.hdbscan_cluster(stackedLogsNorm, minSamples=25, gen_mst=True)
     #hdb.minimum_spanning_tree_.plot(edge_cmap='viridis', edge_alpha=0.6, node_size=50, edge_linewidth=2)
     # plot clusters
     hdbscanClusterPlot = hdbscanClusterPlotter(data=stackedLogs,
                                                clusterStats=clusterStats,
-                                               logs=['m2rx', 'Vp', 'Density'],
-                                               units=['Ohm-m', 'km/s', 'g/cm^3'],
+                                               logs=logs,
+                                               units=units,
                                                hideOutliers=1.0)
+                                               
     hdbscanClusterPlot.cluster2DepthPlotter(depth=data['Depth_m'])
+    
+    clusterProps = [np.average(hdb.exemplars_[i], axis=0)*nfList[i] for i in range(len(hdb.exemplars_))]
+    print(clusterProps)
+    
 
 if __name__ == '__main__':
     main()
