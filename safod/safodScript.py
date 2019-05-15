@@ -46,7 +46,6 @@ def main():
     stackedLogsNorm = copy.deepcopy(stackedLogs)
     stackedLogsNorm, nfList = normalize(stackedLogsNorm, axis=1)
     
-    '''
     # create knn-graph to find knee-point. This will inform our choice of epsilon for DBSCAN
     clusterer.knGraph(stackedLogsNorm, 5)
     # cluster logs using DBSCAN algorithm
@@ -59,7 +58,7 @@ def main():
                                              nonCore=True)
     # reference clusters back to depth                                         
     dbscanClusterPlot.cluster2DepthPlotter(depth=data['Depth_m'])
-    '''
+    
     # cluster logs using HDBSCAN algorithm
     km = clusterer.kmeans_cluster(stackedLogsNorm, n_clusters=3)
     kmClusterPlot = kmeansClusterPlotter(data=stackedLogs,
@@ -67,7 +66,8 @@ def main():
                                          n_clusters=3,
                                          logs=logs,
                                          units=units)
-    quit()
+    kmClusterPlot.cluster2DepthPlotter(depth=data['Depth_m'])
+    
     hdb, clusterStats = clusterer.hdbscan_cluster(stackedLogsNorm, minSamples=25, gen_mst=True)
     #hdb.minimum_spanning_tree_.plot(edge_cmap='viridis', edge_alpha=0.6, node_size=50, edge_linewidth=2)
     # plot clusters
@@ -80,8 +80,7 @@ def main():
     hdbscanClusterPlot.cluster2DepthPlotter(depth=data['Depth_m'])
     
     clusterProps = [np.average(hdb.exemplars_[i], axis=0)*nfList[i] for i in range(len(hdb.exemplars_))]
-    print(clusterProps)
-    
+
 
 if __name__ == '__main__':
     main()

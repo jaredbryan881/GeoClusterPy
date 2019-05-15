@@ -489,5 +489,25 @@ class kmeansClusterPlotter:
 
         plt.show()
         
+    def cluster2DepthPlotter(self, depth):
+        for k, col in zip(np.unique(self.km_labels), self.colors):
+            classMemberMask = (self.km_labels == k)
+            
+            # depth data
+            d = depth[classMemberMask]
+            # cluster number
+            cc = np.ones(d.shape[0]) * k
+            
+            # set color and transparency
+            rgb = np.empty((d.shape[0], 3))
+            rgb[:, 0] = col[0]
+            rgb[:, 1] = col[1]
+            rgb[:, 2] = col[2]
+            
+            plt.scatter(d, cc, c=rgb)
+        plt.xlabel('Depth')
+        plt.ylabel('Cluster')
+        plt.show()
+        
     
             
