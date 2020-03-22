@@ -175,16 +175,10 @@ def normalize(data, axis):
     Returns:
         :return data: np.array
             numpy array containing normalized log data.
-        :return nfList: list
-            list of floats containing the factor used to normalize the data"""
-    nfList = []
+    """
     for i in range(data.shape[axis]):
-        # get largest absolute value of an element
-        n_factor = np.max((abs(np.min(data[:, i])), abs(np.max(data[:, i]))))
         data[:, i] -= np.mean(data[:,i])
         data[:, i] /= np.std(data[:,i])
-        #data[:, i] /= n_factor
-        nfList.append(n_factor)
     	
-    return data, nfList
+    return data
 
