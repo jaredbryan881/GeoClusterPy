@@ -39,9 +39,6 @@ class BoreholeIO:
 	def readHDF5(self):
 		"""Read well log data from hdf5.
 
-		Args:
-			:param inFile: str
-				Filename of input file.
 		Returns:
 			:return data: dict
 				Dictionary containing well log data and corresponding log names.
@@ -52,6 +49,24 @@ class BoreholeIO:
 		for key in keys:
 			data[key] = hf[key][:]
 		hf.close()
+
+		return data
+
+	def readExcel(self, sheetname, skiprows):
+		"""Read well log data from xlsx
+		
+		Args:
+			:param sheetname: str
+				Name of the excel sheet to read.
+
+		Returns:
+			:return exdf
+		"""
+		exdf = pandas.read_excel(self.inPath, sheet_name=sheetname, skiprows=skiprows)
+		data = {item[0]:item[1] for item in list(exdf.items())}
+
+		#keys = list(exdf.keys())
+		#data = [exdf[key] for key in keys]
 
 		return data
 
@@ -72,4 +87,3 @@ class BoreholeIO:
 			# save units as a dataset attribute
 			dset.attrs[dsetNames[dsetName][0]] = dsetNames[dsetName][1]
 		hf.close()
-
