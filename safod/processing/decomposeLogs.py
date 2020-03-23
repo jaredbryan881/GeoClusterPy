@@ -19,7 +19,6 @@ def logsPCA(data, ncomponents, plot=False):
 	scaler = MinMaxScaler(feature_range=[-1, 1])
 	data_rescaled = scaler.fit_transform(data)
 
-	#data_rescaled = data
 	log_pca = PCA().fit(data_rescaled)
 
 	if plot:
@@ -31,7 +30,5 @@ def logsPCA(data, ncomponents, plot=False):
 	
 	pca = PCA(n_components=ncomponents)
 	log_trans = pca.fit_transform(data_rescaled)
-	#pca = PCA()
-	#log_pca = pca.fit(data)
-	#log_trans = pca.fit_transform(data)
+
 	return log_pca, log_trans
