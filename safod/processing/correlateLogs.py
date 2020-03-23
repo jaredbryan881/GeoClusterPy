@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def correlateLogs(data, labels, plot=True):
+def correlateLogs(data, labels, plot=False):
 	"""Compute the correlation matrix for a given set of log data.
 
 	Args:
