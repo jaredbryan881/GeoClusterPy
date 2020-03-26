@@ -125,7 +125,7 @@ class logPlotter:
             cbar.set_label(self.logs[3] + '(' + self.units[3] + ')')
         else:
             cbar.set_label(self.logs[3])
-        plt.show()
+        plt.show()        
 
 
 class dbscanClusterPlotter:
@@ -489,7 +489,7 @@ class kmeansClusterPlotter:
 
         plt.show()
         
-    def cluster2DepthPlotter(self, depth):
+    def cluster2DepthPlotter(self, depth, saveName=""):
         for k, col in zip(np.unique(self.km_labels), self.colors):
             classMemberMask = (self.km_labels == k)
             
@@ -507,7 +507,27 @@ class kmeansClusterPlotter:
             plt.scatter(d, cc, c=rgb)
         plt.xlabel('Depth')
         plt.ylabel('Cluster')
+        if saveName is not "":
+            plt.savefig(saveName)
         plt.show()
         
-    
+
+def crossPlot(data, labels, saveName=""):
+    """Crossplot any number of logs in a grid of NxN where N is the dimension of data"""
+    n = len(labels)
+    fig, ax = plt.subplots(n, n, sharex=True, sharey=True)
+    for i in range(n):
+        for j in range(n):
+            # plot each log against every other
+            ax[i,j].scatter(data[:,j], data[:,i], s=1)
+
+            # labels only on the leftmost and bottommost plots
+            if j==0:
+                ax[i,j].set_ylabel(labels[j])
+            if i==n-1:
+                ax[i,j].set_xlabel(labels[i])
+
+    if saveName is not "":
+        plt.savefig(saveName)
+    plt.show()
             
