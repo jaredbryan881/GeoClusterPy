@@ -26,6 +26,7 @@ def correlateLogs(data, labels, plot=False):
 		ax.set_xticklabels(labels, rotation=45)
 		ax.set_yticks(ticks)
 		ax.set_yticklabels(labels)
+		plt.colorbar()
 		plt.show()
 
 	return cc_matrix
