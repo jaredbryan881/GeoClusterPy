@@ -512,22 +512,21 @@ class kmeansClusterPlotter:
         plt.show()
         
 
-def crossPlot(data, labels, saveName=""):
+def crossPlot(data, labels, colors=None, saveName=None):
     """Crossplot any number of logs in a grid of NxN where N is the dimension of data"""
     n = len(labels)
     fig, ax = plt.subplots(n, n, sharex=True, sharey=True)
     for i in range(n):
         for j in range(n):
             # plot each log against every other
-            ax[i,j].scatter(data[:,j], data[:,i], s=1)
+            ax[i,j].scatter(data[:,i], data[:,j], s=1, c=colors)
 
             # labels only on the leftmost and bottommost plots
             if j==0:
-                ax[i,j].set_ylabel(labels[j])
+                ax[i,j].set_ylabel(labels[i])
             if i==n-1:
-                ax[i,j].set_xlabel(labels[i])
+                ax[i,j].set_xlabel(labels[j])
 
-    if saveName is not "":
+    if saveName is not None:
         plt.savefig(saveName)
     plt.show()
-            
