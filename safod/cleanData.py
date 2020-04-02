@@ -42,7 +42,7 @@ for namePair in res_logs:
 dmin = 3041.5
 dmax = 3954.4
 newDepthInds = np.where(np.logical_and(gp_data['Depth (m)']<dmax, gp_data['Depth (m)']>dmin))[0]
-newDepth = gp_data['Depth (m)'][newDepthInds]
+newDepth = gp_data['Depth (m)'][newDepthInds].values
 
 # interpolate resistivity logs to this depth interval and sampling
 joinedLogs = {}
@@ -52,7 +52,18 @@ for log in res_logs:
 	joinedLogs[log[1]] = match_depths(res_data[log[1]], res_data['depth(m)'], newDepth)
 # move over limited gp_logs
 for log in gp_logs:
-	joinedLogs[log[1]] = gp_data[log[1]][newDepthInds]
+	joinedLogs[log[1]] = gp_data[log[1]][newDepthInds].values
+
+# remove NaNs across all logs
+# TODO: Find a better way to locate nans across all logs and remove rows
+nanInds=[]
+for log in list(joinedLogs.keys()):
+	nanLocs=np.where(np.isnan(joinedLogs[log])==True)[0]
+	if nanLocs.size!=0:
+		nanInds.append(nanLocs[0])
+nanInds=np.unique(nanInds)
+for log in list(joinedLogs.keys()):
+	joinedLogs[log] = np.delete(joinedLogs[log], nanInds, None)
 
 # write data to hdf5
 units = np.concatenate((['m', 'ft'], gp_logs[:,2], res_logs[:,2]))
