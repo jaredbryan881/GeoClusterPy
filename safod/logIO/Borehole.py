@@ -65,9 +65,6 @@ class BoreholeIO:
 		exdf = pandas.read_excel(self.inPath, sheet_name=sheetname, skiprows=skiprows)
 		data = {item[0]:item[1] for item in list(exdf.items())}
 
-		#keys = list(exdf.keys())
-		#data = [exdf[key] for key in keys]
-
 		return data
 
 	def writeHDF5(self, outFile, data, dsetNames):
