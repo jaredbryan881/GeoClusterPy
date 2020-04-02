@@ -46,11 +46,13 @@ class BoreholeIO:
 		hf = h5py.File(self.inPath, 'r')
 		keys = list(hf.keys())
 		data = {}
+		units = {}
 		for key in keys:
 			data[key] = hf[key][:]
+			units[key] = hf[key].attrs['units']
 		hf.close()
 
-		return data
+		return data, units
 
 	def readExcel(self, sheetname, skiprows):
 		"""Read well log data from xlsx
@@ -83,5 +85,5 @@ class BoreholeIO:
 			dset = hf.create_dataset(dsetName, data=data[dsetName])
 			if units is not None:
 				# save units as a dataset attribute
-				dset.attrs[dsetName] = str(units[i])
+				dset.attrs['units'] = str(units[i])
 		hf.close()
