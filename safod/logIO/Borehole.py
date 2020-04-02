@@ -67,7 +67,7 @@ class BoreholeIO:
 
 		return data
 
-	def writeHDF5(self, outFile, data, dsetNames):
+	def writeHDF5(self, outFile, data, dsetNames, units=None):
 		"""Write geophysical well logs to hdf5.
 
 		Args:
@@ -80,7 +80,8 @@ class BoreholeIO:
 		"""
 		hf = h5py.File(outFile, 'w')
 		for i, dsetName in enumerate(dsetNames):
-			dset = hf.create_dataset(dsetNames[dsetName][0], data=data[dsetName])
-			# save units as a dataset attribute
-			dset.attrs[dsetNames[dsetName][0]] = dsetNames[dsetName][1]
+			dset = hf.create_dataset(dsetName, data=data[dsetName])
+			if units is not None:
+				# save units as a dataset attribute
+				dset.attrs[dsetName] = str(units[i])
 		hf.close()
