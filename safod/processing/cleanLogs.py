@@ -55,3 +55,21 @@ class cleanLog:
 
 		return trimmedLogs
 
+def match_depths(log, cur_depth, match_depth):
+	"""Interpolate log values from those related to cur_depth to a target match_depth.
+	
+	Args:
+		:param log: np.array
+			Data for a given geophysical log
+		:param cur_depth: np.array
+			Depth values corresponding to log
+		:param match_depth: np.array
+			Target depth values
+
+	Returns:
+		:return matched_logs: np.array
+			Interpolated log values to match_depth
+	"""
+	return np.interp(match_depth, cur_depth, log)
+
+
