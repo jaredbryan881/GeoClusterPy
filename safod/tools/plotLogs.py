@@ -271,7 +271,7 @@ class hdbscanClusterPlotter:
 
         # set cluster colors
         colorSpace = np.linspace(0, 1, len(self.clusterStats['uniqueLabels']))
-        self.colors = [plt.cm.Spectral(l) for l in colorSpace]
+        self.colors = [plt.cm.Accent(l) for l in colorSpace]
 
         plotDim = self.data.shape[1]
 		
@@ -407,7 +407,7 @@ class kmeansClusterPlotter:
         
         # set cluster colors
         colorSpace = np.linspace(0, 1, n_clusters)
-        self.colors = [plt.cm.Spectral(l) for l in colorSpace]
+        self.colors = [plt.cm.Accent(l) for l in colorSpace]
 
         plotDim = self.data.shape[1]
 		
@@ -515,7 +515,7 @@ class kmeansClusterPlotter:
 def crossPlot(data, labels, colors=None, saveName=None):
     """Crossplot any number of logs in a grid of NxN where N is the dimension of data"""
     n = len(labels)
-    fig, ax = plt.subplots(n, n, sharex=True, sharey=True)
+    fig, ax = plt.subplots(n, n, figsize=(10,10), sharex=True, sharey=True)
     for i in range(n):
         for j in range(n):
             # plot each log against every other
