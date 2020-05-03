@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.decomposition import PCA, FastICA
+from sklearn.decomposition import PCA, FastICA, FactorAnalysis, TruncatedSVD
 from sklearn.preprocessing import MinMaxScaler
 
 class logDecomposer:
@@ -44,9 +44,9 @@ class logDecomposer:
 				Array containing log data
 
 		Returns:
-			:return log_pca: sklearn FastICA object
-				ICA of the log data. Components and explained variance are attributes of this object.
-			:return log_trans: np.array
+			:return log_ica: sklearn FastICA object
+				ICA of the log data.
+			:return log_ica_trans: np.array
 				Fit and dimensionally reduced data matrix
 		"""
 		log_ica = FastICA().fit(self.data)
@@ -54,3 +54,41 @@ class logDecomposer:
 		log_ica_trans = ica.fit_transform(self.data)
 
 		return log_ica, log_ica_trans
+
+	def logsFactorAnalysis(self):
+		"""Decompose a 2D array of log data by factor analysis
+
+			Args:
+				:param data: np.array
+					Array containing log data
+
+			Returns:
+				:return log_fa: sklearn FactorAnalysis object
+					Factor Analysis of the log data.
+				:return log_fa_trans: np.array
+					Fit and dimensionally reduced data matrix
+		"""
+		log_fa = FactorAnalysis().fit(self.data)
+		fa = FactorAnalysis(n_components=self.ncomponents)
+		log_fa_trans = fa.fit_transform(self.data)
+
+		return log_fa, log_fa_trans
+
+	def logsTruncatedSVD(self):
+		"""Decompose a 2D array of log data by truncated singular value decomposition 
+
+			Args:
+				:param data: np.array
+					Array containing log data
+
+			Returns:
+				:return log_svd: sklearn TruncatedSVD object
+					TruncatedSVD of the log data
+				:return log_svd_trans: np.array
+					Fit and dimensionally reduced data matrix
+		"""
+		log_svd = FactorAnalysis().fit(self.data)
+		svd = TruncatedSVD(n_components=self.ncomponents)
+		log_svd_trans = svd.fit_transform(self.data)
+
+		return log_svd, log_svd_trans
