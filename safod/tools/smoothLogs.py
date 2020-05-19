@@ -1,4 +1,5 @@
 import numpy as np
+import scipy
 
 def movingAverage(data, window):
 	"""Compute the moving average of a 1D or 2D numpy array.
@@ -23,3 +24,17 @@ def movingAverage(data, window):
 		return avgData[:, window-1:] / window
 	else:
 		raise ValueError('Data array has an unexpected number of dimensions {}'.format(dims))
+
+def movingMedian(data, window):
+	"""Smooth data with a moving median filter.
+
+	Args:
+		:param data: np.array
+			Numpy array containing a well log curve.
+		:param window: int
+			Size of window for the moving average.
+	Returns:
+		:return medData: np.array
+			Numpy array containing averaged data.
+	"""
+	return scipy.signal.medfilt(data, kernel_size=window)
