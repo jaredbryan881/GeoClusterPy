@@ -1,13 +1,16 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.decomposition import PCA, FastICA, FactorAnalysis, TruncatedSVD
+from sklearn.decomposition import PCA, FastICA, FactorAnalysis, TruncatedSVD, NMF
 from sklearn.preprocessing import MinMaxScaler
 
 class logDecomposer:
-	def __init__(self, data, ncomponents):
+	def __init__(self, data, ncomponents, rescale=True):
 		# rescale data
-		scaler = MinMaxScaler(feature_range=[-1,1])
-		self.data = scaler.fit_transform(data)
+		if rescale:
+			scaler = MinMaxScaler(feature_range=[0,1])
+			self.data = scaler.fit_transform(data)
+		else:
+			self.data = data
 		self.ncomponents = ncomponents
 
 	def logsPCA(self, plot=False):
@@ -50,7 +53,7 @@ class logDecomposer:
 				Fit and dimensionally reduced data matrix
 		"""
 		log_ica = FastICA().fit(self.data)
-		ica = FastICA(n_components=self.ncomponents)
+		ica = FastICA(n_components=self.ncomponents, max_iter=1000)
 		log_ica_trans = ica.fit_transform(self.data)
 
 		return log_ica, log_ica_trans
@@ -92,3 +95,22 @@ class logDecomposer:
 		log_svd_trans = svd.fit_transform(self.data)
 
 		return log_svd, log_svd_trans
+
+	def logsNMF(self):
+		"""Decompose a 2D array of log data by nonnegative matrix factorization
+
+			Args:
+				:param data: np.array
+					Array containing log data
+
+			Returns:
+				:return log_nmf: sklearn TruncatedSVD object
+					NMF of the log data
+				:return log_nmf_trans: np.array
+					Fit and dimensionally reduced data matrix
+		"""
+		log_nmf = NMF().fit(self.data)
+		nmf = NMF(n_components=self.ncomponents)
+		log_nmf_trans = nmf.fit_transform(self.data)
+
+		return log_nmf, log_nmf_trans
