@@ -19,7 +19,7 @@ gp_logs = np.array((['Caliper (in)', 'Caliper', 'in'],
 				    ['Porosity (pu)', 'Porosity', 'pu'], 
 				    ['Spontaneous Potential (mV)', 'SP', 'mV'], 
 				    ['ZDL Density (g/cm^3)', 'Density', 'g/cm^3'], 
-				    ['Potassium (%)', 'Postassium', '%'],
+				    ['Potassium (%)', 'Potassium', '%'],
 				    ['Thorium (PPM)', 'Thorium', 'ppm'],
 				    ['Uranium (PPM)', 'Uranium', 'ppm'],
 				    ['Vp (km/s)', 'Vp', 'km/s'],
@@ -49,7 +49,8 @@ joinedLogs = {}
 joinedLogs['Depth_m']=newDepth
 joinedLogs['Depth_ft']=newDepth*3.28084
 for log in res_logs:
-	joinedLogs[log[1]] = match_depths(res_data[log[1]], res_data['depth(m)'], newDepth)
+	joinedLogs[log[1]] = match_depths(np.log10(np.abs(res_data[log[1]])), res_data['depth(m)'], newDepth)
+
 # move over limited gp_logs
 for log in gp_logs:
 	joinedLogs[log[1]] = gp_data[log[1]][newDepthInds].values
