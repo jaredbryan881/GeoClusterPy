@@ -116,7 +116,7 @@ class clusterLogs:
         plt.title('K-Nearest-Neighbors')
         plt.show()
         
-    def hdbscan_cluster(self, data, minSamples, gen_mst):
+    def hdbscan_cluster(self, data, minClusterSize, minSamples, gen_mst):
         """Cluster a dataset using the HDBSCAN algorithm.
         
         Args:
@@ -131,7 +131,7 @@ class clusterLogs:
             :return hdb: HDBSCAN object
                 HDBSCAN clustering object
         """
-        hdb = hdbscan.HDBSCAN(min_cluster_size=minSamples, gen_min_span_tree=gen_mst).fit(data)
+        hdb = hdbscan.HDBSCAN(min_cluster_size=minClusterSize, min_samples=minSamples, gen_min_span_tree=gen_mst).fit(data)
         clusterStats = self.hdbscan_cluster_stats(hdb)
         
         return hdb, clusterStats
